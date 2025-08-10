@@ -1,52 +1,51 @@
-nome: build release android
+name: build release android
 
 env:
     APK_PATH: android/app/build/outputs/apk/release/app-release.apk
 
 on:
-    #workflow_dispatch: # Disparo manual no github na aba de  actions opcional
-
-    pull_request:
-    branches:
-        #- sua branch (caso o workflow_dispatch for removido o nome ela que iniciar o pipeline).
-        - feature/cicd
+    # workflow_dispatch: # Disparo manual no github na aba de actions opcional
+    push:
+        branches:
+            #- sua branch (caso o workflow_dispatch for removido o nome ela que iniciar o pipeline)
+            - feature/cicd
 
 jobs:
     build-android:
-        runs-on: ubuntu-lastest
+        runs-on: ubuntu-latest # Fixed typo: "lastest" -> "latest"
         timeout-minutes: 30 #opcional
         defaults:
             run:
                 shell: bash
                 working-directory: ./android
-    steps:
-        - uses: actions/checkout
-        - name: Set up Node
-          uses: actions/setup-node@v4
-          with:
-              node-version: "20.x"
-        - name: Set up Java
-          uses: actions/setup-java@v4
-          with:
-              distribution: "zulu" # de acordo com a versão do react native do projeto
-              java-version: "
-        - name: Install yarn packages
-          run: yarn inst
-        - name: Decode keystore
-          run: echo ${{secrets.ANDROID_UPLOAD_KEY_BASE64}} | base64 -d app/estrutura.jsk # .jks ou .keyst
-        - name: make gradlew executable
-          run: chmod +x ./grad
-        - name: Build APK
-          run: ./gradlew assembleRelease
-          env:
-              # Cadastra as chaves no git e acordo com o alias que estão no build.gradle.
-              MYAPP_UPLOAD_STORE_FILE: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_FILE}}
-              MYAPP_UPLOAD_KEY_ALIAS: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_ALIAS}}
-              MYAPP_UPLOAD_STORE_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_PASSWORD}}
-              MYAPP_UPLOAD_KEY_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_PASSWOR
-        - name: Upload APK to Artifact
-          use: actions/upload-artifact@v4
-          with:
-              name: app-release.apk
-              path: ${{ env.APK_PATH }}
-              retention-days: 7
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.x"
+            - name: Set up Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "zulu" # de acordo com a versão do react native do projeto
+                  java-version: "17"
+            - name: Install yarn packages
+              run: yarn install # Fixed typo: "inst" -> "install"
+            - name: Decode keystore
+              run: echo ${{ secrets.ANDROID_UPLOAD_KEY_BASE64 }} | base64 -d > android/app/estrutura.jks # Fixed path and added >
+            - name: make gradlew executable
+              run: chmod +x ./gradlew # Fixed typo: "grad" -> "gradlew"
+            - name: Build APK
+              run: ./gradlew assembleRelease
+              env:
+                  # Cadastra as chaves no git e acordo com o alias que estão no build.gradle
+                  MYAPP_UPLOAD_STORE_FILE: estrutura.jks # Should match your keystore filename
+                  MYAPP_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_MYAPP_UPLOAD_KEY_ALIAS }}
+                  MYAPP_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_MYAPP_UPLOAD_STORE_PASSWORD }}
+                  MYAPP_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_MYAPP_UPLOAD_KEY_PASSWORD }}
+            - name: Upload APK to Artifact
+              uses: actions/upload-artifact@v4 # Fixed typo: "use" -> "uses"
+              with:
+                  name: app-release.apk
+                  path: ${{ env.APK_PATH }}
+                  retention-days: 7
