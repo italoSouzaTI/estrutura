@@ -4,11 +4,12 @@ env:
     APK_PATH: android/app/build/outputs/apk/release/app-release.apk
 
 on:
-    workflow_dispatch: # Disparo manual no github na aba de  actions opcional
+    #workflow_dispatch: # Disparo manual no github na aba de  actions opcional
 
     pull_request:
     branches:
         #- sua branch (caso o workflow_dispatch for removido o nome ela que iniciar o pipeline).
+        - feature/cicd
 
         jobs:
             build-android:
