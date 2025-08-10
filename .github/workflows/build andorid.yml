@@ -11,49 +11,42 @@ on:
         #- sua branch (caso o workflow_dispatch for removido o nome ela que iniciar o pipeline).
         - feature/cicd
 
-        jobs:
-            build-android:
-                runs-on: ubuntu-lastest
-                timeout-minutes: 30 #opcional
-                defaults:
-                    run:
-                        shell: bash
-                        working-directory: ./android
-            steps:
-                - uses: actions/checkout@v4
-
-                - name: Set up Node
-                  uses: actions/setup-node@v4
-                  with:
-                      node-version: "20"
-
-                - name: Set up Java
-                  uses: actions/setup-java@v4
-                  with:
-                      distribution: "zulu" # de acordo com a versão do react native do projeto
-                      java-version: "17"
-
-                - name: Install yarn packages
-                  run: yarn install
-
-                - name: Decode keystore
-                  run: echo ${{secrets.ANDROID_UPLOAD_KEY_BASE64}} | base64 -d app/estrutura.jsk # .jks ou .keystore
-
-                - name: make gradlew executable
-                  run: chmod +x ./gradlew
-
-                - name: Build APK
-                  run: ./gradlew assembleRelease
-                  env:
-                      # Cadastra as chaves no git e acordo com o alias que estão no build.gradle.
-                      MYAPP_UPLOAD_STORE_FILE: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_FILE}}
-                      MYAPP_UPLOAD_KEY_ALIAS: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_ALIAS}}
-                      MYAPP_UPLOAD_STORE_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_PASSWORD}}
-                      MYAPP_UPLOAD_KEY_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_PASSWORD}}
-
-                - name: Upload APK to Artifact
-                  use: actions/upload-artifact@v4
-                  with:
-                      name: app-release.apk
-                      path: ${{ env.APK_PATH }}
-                      retention-days: 7
+jobs:
+    build-android:
+        runs-on: ubuntu-lastest
+        timeout-minutes: 30 #opcional
+        defaults:
+            run:
+                shell: bash
+                working-directory: ./android
+    steps:
+        - uses: actions/checkout
+        - name: Set up Node
+          uses: actions/setup-node@v4
+          with:
+              node-version: "20.x"
+        - name: Set up Java
+          uses: actions/setup-java@v4
+          with:
+              distribution: "zulu" # de acordo com a versão do react native do projeto
+              java-version: "
+        - name: Install yarn packages
+          run: yarn inst
+        - name: Decode keystore
+          run: echo ${{secrets.ANDROID_UPLOAD_KEY_BASE64}} | base64 -d app/estrutura.jsk # .jks ou .keyst
+        - name: make gradlew executable
+          run: chmod +x ./grad
+        - name: Build APK
+          run: ./gradlew assembleRelease
+          env:
+              # Cadastra as chaves no git e acordo com o alias que estão no build.gradle.
+              MYAPP_UPLOAD_STORE_FILE: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_FILE}}
+              MYAPP_UPLOAD_KEY_ALIAS: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_ALIAS}}
+              MYAPP_UPLOAD_STORE_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_STORE_PASSWORD}}
+              MYAPP_UPLOAD_KEY_PASSWORD: ${{secrests.ANDROID_MYAPP_UPLOAD_KEY_PASSWOR
+        - name: Upload APK to Artifact
+          use: actions/upload-artifact@v4
+          with:
+              name: app-release.apk
+              path: ${{ env.APK_PATH }}
+              retention-days: 7
