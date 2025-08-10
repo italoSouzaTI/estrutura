@@ -32,7 +32,7 @@ jobs:
             - name: Install yarn packages
               run: yarn install # Fixed typo: "inst" -> "install"
             - name: Decode keystore
-              run: echo ${{ secrets.ANDROID_UPLOAD_KEY_BASE64 }} | base64 -d > .android/app/estrutura.keystore # Fixed path and added >
+              run: echo ${{ secrets.ANDROID_UPLOAD_KEY_BASE64 }} | base64 -d > app/estrutura.keystore # Fixed path and added >
             - name: make gradlew executable
               run: chmod +x ./gradlew # Fixed typo: "grad" -> "gradlew"
             - name: Build APK
